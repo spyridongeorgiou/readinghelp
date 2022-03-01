@@ -1,3 +1,4 @@
+#readinghelp WIP
 import sys, pygame
 from pygame import display
 if __name__ == "__main__":
