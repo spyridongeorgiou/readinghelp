@@ -8,7 +8,7 @@
 # https://pipenv.pypa.io/en/latest/
 # Use freely
 
-# Note: lines starting with ## are code that is not needed for the program to function but may be useful for testing and figuring out bugs
+# Note: lines starting with ## are code that is not necessarily needed for the program to function but may be useful for testing and figuring out bugs
 
 # required imports
 ##from importlib.machinery import ModuleSpec
@@ -66,9 +66,15 @@ if __name__ == "__main__":
     win32gui.SetWindowLong(hwnd, win32con.GWL_EXSTYLE,
                            win32gui.GetWindowLong(hwnd, win32con.GWL_EXSTYLE) | win32con.WS_EX_LAYERED)
     win32gui.SetLayeredWindowAttributes(hwnd, win32api.RGB(*fuchsia), 0, win32con.LWA_COLORKEY) # set window transparency color
-    #focus = win32gui.SetFocus(hwnd) 
-    totop = win32gui.BringWindowToTop(hwnd) # Set Window to top
-    
+    def focus():
+        try:
+            ##win32gui.ShowWindow(hwnd,5)
+            ##win32gui.SetFocus(hwnd) 
+            ##win32gui.BringWindowToTop(hwnd)
+            win32gui.SetForegroundWindow(hwnd)
+        except:
+            print("Click out of bounds!")
+            return
     def keyevent(): # subprogram which checks within ev: if the ESC key was pressed, if so, it quits pygame and exits the program successfully
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_SPACE: # upon pressing spacebar
@@ -80,6 +86,7 @@ if __name__ == "__main__":
                         lineplace.append((mouseposfreeze[0],mouseposfreeze[1]))
                         #return
     while 1:
+        focus()
         clock.tick(59)
         ev = pg.event.get()
         for event in ev:
@@ -105,5 +112,4 @@ if __name__ == "__main__":
         
         ##print (mousepos) # print current W * H / X * Y coordinates
         pg.display.update() # refresh the display to make changes visible
-        totop
-        #focus
+        focus()
