@@ -1,8 +1,5 @@
 # readinghelp
-# Made by Spyridon Georgiou (https://github.com/spyridongeorgiou/readinghelp) with reference code from:
-# https://stackoverflow.com/questions/7053971/python-trouble-using-escape-key-to-exit
-# https://pythonprogramming.altervista.org/how-to-make-a-fully-transparent-window-with-pg
-# https://github.com/ashukla95/traffic-management-using-bluetooth/blob/1a576179d11199136a62c6c811ff583b11935330/frame1.py
+# Made by Spyridon Georgiou (https://github.com/spyridongeorgiou/readinghelp)
 # http://timgolden.me.uk/pywin32-docs/contents.html
 # https://www.pygame.org/docs/
 # https://pipenv.pypa.io/en/latest/
@@ -15,17 +12,23 @@
 import pygame as pg
 import time
 import sys
-import os
+##import os
 import win32api
 import win32con
 import win32gui
 import pyautogui
+##import logging
+import re
 
 #regular color tuples
 red = (255,0,0)
 green = (0,255,0)
 blue = (0,0,255)
 black = (0,0,0)
+R,G,B = 0,0,0
+## color = [R,G,B]
+cmod = 62 #color modifier for RGG
+
 #dark_red = (139, 0, 0)
 
 #special color tuple, DO NOT USE AS A REGULAR COLOR !
@@ -42,11 +45,31 @@ wait = time.sleep(0.1) # take a breather and wait for 0.1s
 # FIX: add get focus to window #
 # reminder to self: x _ y | == w _ h |
 
+#Great code from https://stackoverflow.com/a/2091530/14253816
+class WindowMgr:
+    """Encapsulates some calls to the winapi for window management"""
+    def __init__ (self):
+        """Constructor"""
+        self._handle = None
+    def find_window(self, class_name, window_name=None):
+        """find a window by its class_name"""
+        self._handle = win32gui.FindWindow(class_name, window_name)
+    def _window_enum_callback(self, hwnd, wildcard):
+        """Pass to win32gui.EnumWindows() to check all the opened windows"""
+        if re.match(wildcard, str(win32gui.GetWindowText(hwnd))) is not None:
+            self._handle = hwnd
+    def find_window_wildcard(self, wildcard):
+        """find a window whose title matches the wildcard regex"""
+        self._handle = None
+        win32gui.EnumWindows(self._window_enum_callback, wildcard)
+    def set_foreground(self):
+        """put the window in the foreground"""
+        win32gui.SetForegroundWindow(self._handle)
+
 # beginning of the program
 if __name__ == "__main__":
     
     pg.init() # initialize the pg module
-    pg.display.init() # initialize the pg display module
     pg.display.set_caption('readinghelp') # set caption of the launched window
     pg.font.init()
     ##guifont = pg.font.Font(None,22) # Fonttype and Size
@@ -70,22 +93,39 @@ if __name__ == "__main__":
     totop = win32gui.BringWindowToTop(hwnd) # Set Window to top
     
     def keyevent(): # subprogram which checks within ev: if the ESC key was pressed, if so, it quits pygame and exits the program successfully
-            if event.type == pg.KEYDOWN:
-                if event.key == pg.K_SPACE: # upon pressing spacebar
-                    lineplace.clear()  # clear lineplace list i.e. remove all of the persistent lines spawned by left-clicking
-                    return
-            elif event.type == pg.MOUSEBUTTONDOWN:
-                if event.button == 1:
-                        mouseposfreeze = list(pyautogui.position())
-                        lineplace.append((mouseposfreeze[0],mouseposfreeze[1]))
-                        #return
+        if event.type == pg.KEYDOWN:
+            if event.key == pg.K_SPACE: # upon pressing spacebar
+                lineplace.clear()  # clear lineplace list i.e. remove all of the persistent lines spawned by left-clicking
+                color.clear()
+                #return
+        elif event.type == pg.MOUSEBUTTONDOWN:
+            if event.button == 1:
+                mouseposfreeze = list(pyautogui.position())
+                lineplace.append((mouseposfreeze[0],mouseposfreeze[1]))
+                return
     while 1:
-        clock.tick(59)
+        pg.display.init() # initialize the pg display module
+        clock.tick(75)
+        pg.event.set_grab(True)
         ev = pg.event.get()
         for event in ev:
             if event.type == pg.QUIT or (event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE):
                 pg.quit()
                 sys.exit()
+            if event.type == pg.KEYDOWN:
+                if event.key == pg.K_1: 
+                    R = R + cmod
+                    if R > 255:
+                        R = R - R
+                if event.key == pg.K_2:
+                    G = G + cmod
+                    if G > 255:
+                        G = G - G
+                if event.key == pg.K_3:
+                    B = B + cmod
+                    if B > 255:
+                        B = B - B
+            color = [R,G,B]
             keyevent()
         #pg.display.update() # refresh the display to make changes visible
         pg.mouse.set_visible(True) # make the mouse visible
@@ -94,16 +134,19 @@ if __name__ == "__main__":
 
         ##pg.draw.rect(screen, dark_red, pg.Rect(30, 30, 60, 60)) # draws a small rectangle in the top left corner of the screen, currently not needed for transaprency
         ##line = pg.draw.aaline(screen,red,(0,540),(1920,540))
-        wait
         mousepos = list(pyautogui.position()) # turn the current W * H / X * Y coordinates of the mouse into a simple list [w,h]
-        wait
-        line = pg.draw.aaline(screen,red,(0,mousepos[1]),(current_w,mousepos[1])) # draw a straight anti-aliased line on the current Y height of the mouse on screen, while the X width stays the same as the screens current_w
+        line = pg.draw.line(screen,color,(0,mousepos[1]),(current_w,mousepos[1]),width=3) # draw a straight anti-aliased line on the current Y height of the mouse on screen, while the X width stays the same as the screens current_w
+        ##print (color)
+        #print (ev)
         for i in lineplace: #for each (X,Y) tuple in i, place a line of the latest (X,Y) tuple using the Y [1] coordinate
-            print(lineplace)
-            print (i[1])
-            pg.draw.aaline(screen,blue,(0,i[1]),(current_w,i[1]))
-        
+            #print(lineplace)
+            #print (i[1])
+            pg.draw.line(screen,color,(0,i[1]),(current_w,i[1]),width=3)
         ##print (mousepos) # print current W * H / X * Y coordinates
+        pg.event.pump()
         pg.display.update() # refresh the display to make changes visible
-        totop
+        #w = WindowMgr()
+        #w.find_window_wildcard(".*readinghelp.*")
+        #w.set_foreground()
+        #totop
         #focus
