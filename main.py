@@ -147,7 +147,8 @@ if __name__ == "__main__":
         for i in lineplace: #for each (X,Y) tuple in i, place a line of the latest (X,Y) tuple using the Y [1] coordinate
             pg.draw.line(screen,color,(0,i[1]),(current_w,i[1]),width=t)
         ##bgrect = pg.draw.rect()
-        vtR = ("'1' - Rot: " + str(R)) # display color + current color value number 
+#       display color + current color value number 
+        vtR = ("'1' - Rot: " + str(R)) 
         vtG = ("'2' - Grün: " + str(G))  
         vtB = ("'3' - Blau: " + str(B))
         vtt = ("'F'/'G' (+/-) - Breite: " + str(t))
