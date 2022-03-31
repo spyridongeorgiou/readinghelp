@@ -147,24 +147,33 @@ if __name__ == "__main__":
         for i in lineplace: #for each (X,Y) tuple in i, place a line of the latest (X,Y) tuple using the Y [1] coordinate
             pg.draw.line(screen,color,(0,i[1]),(current_w,i[1]),width=t)
         ##bgrect = pg.draw.rect()
-        vtR = ("Taste 1 - Rot: " + str(R)) # display color + current color value number 
-        vtG = ("Taste 2 - Grün: " + str(G))  
-        vtB = ("Taste 3 - Blau: " + str(B))
-        vtt = ("Taste F/G (+/-) - Liniendicke: " + str(t))
-        #ESC text + BUTTON
-        #About hover info
-        xyvtR = calibri.size(vtR) # get current W * H needed to render the text
+        vtR = ("'1' - Rot: " + str(R)) # display color + current color value number 
+        vtG = ("'2' - Grün: " + str(G))  
+        vtB = ("'3' - Blau: " + str(B))
+        vtt = ("'F'/'G' (+/-) - Breite: " + str(t))
+        vtESC =("'ESC' - Programm beenden")
+        vtSPC = ("'Leertaste' - Zurücksetzen")
+#       get current W * H needed to render the text
+        xyvtR = calibri.size(vtR)
         xyvtG = calibri.size(vtG) 
         xyvtB = calibri.size(vtG)
         xyvtt = calibri.size(vtt)
-        textR = calibri.render(vtR,1, (color[0],0,0), grey) # create image object which can be drawn on screen by using blit. (text,antialiasing,color(tuple),background)
+        xyvtESC = calibri.size(vtESC)
+        xyvtSPC = calibri.size(vtSPC)
+#       create image object which can be drawn on screen by using blit. (text,antialiasing,color(tuple),background)
+        textR = calibri.render(vtR,1, (color[0],0,0), grey) 
         textG = calibri.render(vtG,1, (0,color[1],0), grey)
         textB = calibri.render(vtB,1, (0,0,color[2]), grey)
         textt = calibri.render(vtt,1, (black), grey)
-        screen.blit(textR, (0,xyvtR[1]*8)) # draw the previously created image object on screen. (image,(X,Y))
+        textESC = calibri.render(vtESC,1, (black),grey)
+        textSPC = calibri.render(vtSPC,1, (black),grey)
+#       draw the previously created image object on screen. (image,(X,Y))
+        screen.blit(textESC, (0,xyvtESC[1]*7))
+        screen.blit(textR, (0,xyvtR[1]*8)) 
         screen.blit(textG, (0,xyvtG[1]*9))
         screen.blit(textB, (0,xyvtB[1]*10))
         screen.blit(textt, (0,xyvtt[1]*11))
+        screen.blit(textSPC, (0,xyvtSPC[1]*12))
         #pg.font.Font.render()
         #pg.font.Font.render()
         #pg.font.Font.render()
