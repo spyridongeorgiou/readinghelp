@@ -10,25 +10,26 @@
 # required imports
 import pygame as pg
 import sys
+import os
 import win32api
 import win32con
 import win32gui
 import pyautogui
 import logging
 ##import re
-
 #regular color tuples
 red = (255,0,0)
 ##green = (0,255,0)
 ##blue = (0,0,255)
 black = (0,0,0)
-grey = (128,128,128)
+white = (255,255,255)
 R,G,B = 0,0,0 # RED GREEN BLUE set to 0 initially
+
 cmod = 15 #color value modifier for RGB
 t = 2 #thickness of the line drawn/placed on screen
 
 #special color tuple 
-fuchsia = (255, 0, 128) # needed for transparency
+fuchsia = (255, 0, 128) # used as the alpha colorkey which is needed for transparency
 # NOTE: DO NOT USE THIS AS A REGULAR COLOR !
 
 lineplace = [] # empty list that saves the X * Y coordinates of the mouse after click and apppends them as tuples, 
@@ -65,6 +66,8 @@ clock = pg.time.Clock() # game clock initialized
 # beginning of the program 
 if __name__ == "__main__":
     pg.init() # initialize the pg module
+    pg.display.init() # initialize the pg display module
+    icon = pg.image.load(os.path.join("lesehilfe.png"))
     pg.display.set_caption('readinghelp') # set caption of the launched window
     pg.font.init() #initialize the font. this is normally already called in pg.init()
     pg.event.set_grab(True) # limit input to only the pygame window, to avoid accidentally  
@@ -90,17 +93,18 @@ if __name__ == "__main__":
     focus = win32gui.SetFocus(hwnd) 
     totop = win32gui.BringWindowToTop(hwnd) # Set Window to top
 
+    pg.Surface.convert_alpha(icon)
+    pg.display.set_icon(icon) # set icon and initalize the pg.display() 
+
     def keyevent(): # subprogram which checks within ev: if the ESC key was pressed, if so, it quits pygame and exits the program successfully
         if event.type == pg.MOUSEBUTTONDOWN:
             if event.button == 1:
                 mouseposfreeze = list(pyautogui.position())
                 lineplace.append((mouseposfreeze[0],mouseposfreeze[1]))
                 return
-
-
+                
     # mainloop for pygame
     while 1:
-        pg.display.init() # initialize the pg display module
         clock.tick(75)
         screen.fill(fuchsia) # this is required in order to make the screen transparent
         surface.fill(fuchsia)
@@ -146,8 +150,7 @@ if __name__ == "__main__":
         line = pg.draw.line(screen,color,(0,mousepos[1]),(current_w,mousepos[1]),width=t) # draw a straight anti-aliased line on the current Y height of the mouse on screen, while the X width stays the same as the screens current_w
         for i in lineplace: #for each (X,Y) tuple in i, place a line of the latest (X,Y) tuple using the Y [1] coordinate
             pg.draw.line(screen,color,(0,i[1]),(current_w,i[1]),width=t)
-        ##bgrect = pg.draw.rect()
-#       display color + current color value number 
+#       display color + current color value number, keys used to increase/decrease line thickness 
         vtR = ("'1' - Rot: " + str(R)) 
         vtG = ("'2' - Grün: " + str(G))  
         vtB = ("'3' - Blau: " + str(B))
@@ -162,12 +165,12 @@ if __name__ == "__main__":
         xyvtESC = calibri.size(vtESC)
         xyvtSPC = calibri.size(vtSPC)
 #       create image object which can be drawn on screen by using blit. (text,antialiasing,color(tuple),background)
-        textR = calibri.render(vtR,1, (color[0],0,0), grey) 
-        textG = calibri.render(vtG,1, (0,color[1],0), grey)
-        textB = calibri.render(vtB,1, (0,0,color[2]), grey)
-        textt = calibri.render(vtt,1, (black), grey)
-        textESC = calibri.render(vtESC,1, (black),grey)
-        textSPC = calibri.render(vtSPC,1, (black),grey)
+        textR = calibri.render(vtR,1, (color[0],0,0), white) 
+        textG = calibri.render(vtG,1, (0,color[1],0), white)
+        textB = calibri.render(vtB,1, (0,0,color[2]), white)
+        textt = calibri.render(vtt,1, (black), white)
+        textESC = calibri.render(vtESC,1, (black),white)
+        textSPC = calibri.render(vtSPC,1, (black),white)
 #       draw the previously created image object on screen. (image,(X,Y))
         screen.blit(textESC, (0,xyvtESC[1]*7))
         screen.blit(textR, (0,xyvtR[1]*8)) 
