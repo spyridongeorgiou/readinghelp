@@ -5,8 +5,10 @@ name = "pypi"
 
 [packages]
 pygame = "==2.0.1"
-pyautogui = "*"
 pywin32 = "*"
+pyautogui = "*"
+pyinstaller = "*"
+pipfile = "*"
 
 [dev-packages]
 
