@@ -64,13 +64,8 @@ if __name__ == "__main__":
     import pyautogui
     pg.init() # initialize the pg module
     pg.display.init() # initialize the pg display module
-    try:
-        workdir = os.chdir("C:\EDV\Lesehilfe")
-        ##print (repr(workdir))
-        icon = pg.image.load("lesehilfelogo2.png")
-        pg.display.set_icon(icon) # set icon and initalize the pg.display()
-    except OSError:
-        print("DIRECTORY ERROR")
+    icon = pg.image.load("data\lesehilfelogo2.png")
+    pg.display.set_icon(icon) # set icon and initalize the pg.display()
     #pg.Surface.convert_alpha(icon)
     pg.display.set_caption('Lesehilfe') # set caption of the launched window
     pg.font.init() #initialize the font. this is normally already called in pg.init()
