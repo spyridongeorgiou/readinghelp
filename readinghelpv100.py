@@ -120,7 +120,7 @@ if __name__ == "__main__":
                     G = G + cmod
                     if G > 255:
                         G = G - G
-                if event.key == pg.K_3: # 2 key
+                if event.key == pg.K_3: # 3 key
                     B = B + cmod
                     if B > 255:
                         B = B - B
